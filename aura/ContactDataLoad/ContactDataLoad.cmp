@@ -1,0 +1,62 @@
+<aura:component controller="contactDataCtrl" implements="force:appHostable,flexipage:availableForAllPageTypes" access="global" >
+	<aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:handler event="force:refreshView" action="{!c.doInit}" />
+
+    <aura:attribute name="columns" type="List"/>
+    <aura:attribute name="data" type="Object"/>
+    <aura:attribute name="initialRows" type="Integer" default="30"/>
+    <aura:attribute name="currentCount" type="Integer" default="30"/>
+    <aura:attribute name="offsetVal" type="Integer" default="1"/>
+    <aura:attribute name="totalRows" type="Integer" default="200"/>
+    <aura:attribute name="updateList" type="List"/>
+    <aura:attribute name="displayStatusWindow" type="Boolean" default="false"/>
+    <aura:attribute name="sortedBy" type="String" default="Name"/>
+    <aura:attribute name="sortedDirection" type="String" default="asc"/>
+    
+    <div class="slds-page-header" role="banner">
+        <span class="slds-page-header__title">
+            <lightning:input aura:id="searchId" onchange="{!c.searchData}" type="search" label="Searh" placeholder="Filter by" />
+            <lightning:button label="Change Status" onclick="{!c.changeStatus}" iconPosition='right'/>
+        </span>
+    </div>
+    <div style="height:250px">
+        <lightning:datatable aura:id="contactData"
+                             keyField="Id"
+                             columns="{!v.columns}"
+                             data="{!v.data}"
+                             enableInfiniteLoading="true"
+                             onloadmore="{!c.loadMore}"
+                             loadMoreOffset="{!v.offsetVal}"
+                             onrowselection="{!c.handleSelectedRow}"
+                             onsort="{!c.updateColumnSorting}"
+                             sortedBy="{!v.sortedBy}"  
+                             sortedDirection="{!v.sortedDirection}"/>
+    </div>
+    <!-- Logic for model window-->
+     <aura:if isTrue="{!v.displayStatusWindow}">
+            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container"> 
+                    
+                    <div class="slds-modal__content slds-p-around_small" id="modal-content-id-1">
+                        <p>
+                            <div class="slds-form-element__control">
+                                <ui:inputSelect multiple="false" class="single" aura:id="selectSingle">
+                                    <ui:inputSelectOption text="Active" label="Active"/>
+                                    <ui:inputSelectOption text="Inactive" label="Inactive"/>
+                                    <ui:inputSelectOption text="Pending" label="Pending"/>
+                                    <ui:inputSelectOption text="Expired" label="Expired"/>
+                                    <ui:inputSelectOption text="In Progress" label="In Progress"/>
+                                </ui:inputSelect>
+                            </div>
+                        </p>
+                        <footer class="slds-modal__footer">
+                            <lightning:button variant="brand" label="Cancel" title="Cancel" onclick="{!c.cancelWindow}"/>
+                            <lightning:button variant="brand" label="update" title="update" onclick="{!c.updateStatus}"/>
+                        </footer>
+                    </div>
+                    
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </aura:if>
+</aura:component>
